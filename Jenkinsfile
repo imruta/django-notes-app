@@ -1,35 +1,43 @@
-pipeline {
-    agent any 
-    
+pipeline{
+    agent any
     stages{
-        stage("Clone Code"){
-            steps {
-                echo "Cloning the code"
-                git url:"https://github.com/LondheShubham153/django-notes-app.git", branch: "main"
+        stage('code clone')
+        {
+            steps{
+                echo "This is code clone stage"
+                git url: "https://github.com/imruta/django-notes-app.git", branch: "main"
             }
         }
-        stage("Build"){
-            steps {
-                echo "Building the image"
-                sh "docker build -t my-note-app ."
+        stage('code build')
+        {
+            steps{
+                echo "This is code build stage"
+                sh 'docker build -t django-note-app:latest .'
             }
         }
-        stage("Push to Docker Hub"){
-            steps {
-                echo "Pushing the image to docker hub"
-                withCredentials([usernamePassword(credentialsId:"dockerHub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-                sh "docker tag my-note-app ${env.dockerHubUser}/my-note-app:latest"
-                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                sh "docker push ${env.dockerHubUser}/my-note-app:latest"
-                }
+        stage('image push')
+        {
+            steps{
+                echo "This is image push to dockerhub stage"
+               
+               
+   withCredentials([usernamePassword(credentialsId: "dockerhub", passwordVariable: "dockerhubPass", 
+                                     usernameVariable: "dockerhubUser")]) {
+    sh "docker tag django-note-app:latest ${env.dockerhubUser}/django-note-app:latest"
+    sh "docker login -u ${env.dockerhubUser} -p ${env.dockerhubPass}"
+}
+
+   
             }
         }
-        stage("Deploy"){
-            steps {
-                echo "Deploying the container"
-                sh "docker-compose down && docker-compose up -d"
-                
+        stage('code deploy')
+        {
+            steps{
+                echo "This is code deploy stage"
+                sh "docker-compose down && docker-compose up -d "
             }
         }
     }
-}
+    
+    
+    
