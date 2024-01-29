@@ -1,5 +1,5 @@
 pipeline{
-    agent {label 'agent-prod'}
+    agent {label 'prod-agent'}
     stages{
         stage('code clone')
         {
